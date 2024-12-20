@@ -1,10 +1,10 @@
 # TRI-Egregious-Polluters
 
-My code from an environmental sociology investigation lead by Professor Simone Pulver (UCSB) into whether some facilities in the Toxics Releases Industry database pollute significantly more than others and what common underlying characteristics these facilities may share. 
+My code from an environmental sociology investigation lead by Professor Simone Pulver (UCSB) into whether some facilities in the EPA's Toxics Releases Industry (TRI) and Risk-Screening Environmental Indicators (RSEI) Hazard database pollute significantly more than others and what common underlying characteristics these facilities may share. 
 
 Authors: Simone Pulver (lead of the project), Jeffrey Wu (quantitative lead), Mary Burke, Dustin Hill (contributors to previous projects)
 
-This project builds on Professor Pulver's work on the topic, see (insert reference). In this project, Professor Pulver wanted to conduct a more rigorous statistical analysis to evaluate the distribution of "egregious polluters" across NAICS code industries and predict egregious polluter status based on facility characteristics, so she sought me out to be the quantitative lead for this project. The analysis is split into the two files included in this repository: 
+This project builds on Professor Pulver's work on the topic, see (https://iopscience.iop.org/article/10.1088/1748-9326/ab7393/meta). In this project, Professor Pulver wanted to conduct a more rigorous statistical analysis to evaluate the distribution of "egregious polluters" across NAICS code industries and predict egregious polluter status based on facility characteristics, so she sought me out to be the quantitative lead for this project. The analysis is split into the two files included in this repository: 
 
 ## TRI-NETS-Merge.qmd
 

@@ -261,7 +261,7 @@ hist(coefs_lbs,main="Releases Gini Slope Coefficients for each NAICS",xlab="")
 hist(coefs_haz,main="RSEI Hazard Gini Slope Coefficients for each NAICS",xlab="")
 ```
 
-Identifying egregious pollutors wrt RSEI Hazard within each industry/NAICS code with at least 5 facilities reporting: 
+Identifying egregious polluters wrt RSEI Hazard within each industry/NAICS code with at least 5 facilities reporting: 
 
 ```{r}
 TRI_NETS20 = TRI_NETS %>% filter(Year == 2020)
@@ -278,7 +278,7 @@ for(i in unique(TRI_NETS20$`41. PRIMARY NAICS CODE`)){
 length(valid_NAICS)
 ```
 
-Criteria 1: top 10% of pollutors 
+Criteria 1: top 10% of polluters 
 
 ```{r}
 egregious1 = function(data = TRI_NETS,year){
@@ -318,9 +318,9 @@ egregious2 = function(data = TRI_NETS,year){
   
     all_facilities_releases = sum(industry_yr_data_ordered$RSEI_Hazard,na.rm = TRUE)
     cumulative_pollution_sum = cumsum(na.omit(industry_yr_data_ordered$RSEI_Hazard))
-    top_pollutors = which(cumulative_pollution_sum <= (all_facilities_releases*0.9))
+    top_polluters = which(cumulative_pollution_sum <= (all_facilities_releases*0.9))
     
-    egregious = industry_yr_data_ordered$Duns_TRIFID[c(1:(length(top_pollutors)+1))]
+    egregious = industry_yr_data_ordered$Duns_TRIFID[c(1:(length(top_polluters)+1))]
     
     egregious2_list[[tracker]] = egregious
     tracker = tracker+1  
@@ -408,18 +408,18 @@ test5 = egregious5(year=2020)
 names(test5) = valid_NAICS
 ```
 
-Comparing egregious pollutors across operationalizations: 
+Comparing egregious polluters across operationalizations: 
 
-First, label all facilities which are egregious pollutors
+First, label all facilities which are egregious polluters
 
 ```{r}
 label_egregious_facilities = function(data,year,operationalization){
   data_label = data %>% filter(Year == year)
-  data_label$egregious_pollutor = FALSE
+  data_label$egregious_polluter = FALSE
   for (i in 1:length(operationalization)){
     egregious_facilities = operationalization[[i]]
     idx = which(data_label$Duns_TRIFID %in% egregious_facilities)
-    data_label$egregious_pollutor[idx] = TRUE
+    data_label$egregious_polluter[idx] = TRUE
   }  
   
   return(data_label)
@@ -442,23 +442,23 @@ Next, calculate descriptive statistics
 Operation 1: 
 
 ```{r}
-#Number of facilities categorized as egregious pollutors
-sum(TRI_NETS20_label1$egregious_pollutor)
+#Number of facilities categorized as egregious polluters
+sum(TRI_NETS20_label1$egregious_polluter)
 
-#Percent of facilities categorized as egregious pollutors
-100*(sum(TRI_NETS20_label1$egregious_pollutor)/length(TRI_NETS20_label1$egregious_pollutor))
+#Percent of facilities categorized as egregious polluters
+100*(sum(TRI_NETS20_label1$egregious_polluter)/length(TRI_NETS20_label1$egregious_polluter))
 
-#Number of industries with egregious pollutors
-length(unique(TRI_NETS20_label1$`41. PRIMARY NAICS CODE`[which(TRI_NETS20_label1$egregious_pollutor == TRUE)]))
+#Number of industries with egregious polluters
+length(unique(TRI_NETS20_label1$`41. PRIMARY NAICS CODE`[which(TRI_NETS20_label1$egregious_polluter == TRUE)]))
 
-#Percent of industries with egregious pollutors
-100*(length(unique(TRI_NETS20_label1$`41. PRIMARY NAICS CODE`[which(TRI_NETS20_label1$egregious_pollutor == TRUE)]))/length(valid_NAICS))
+#Percent of industries with egregious polluters
+100*(length(unique(TRI_NETS20_label1$`41. PRIMARY NAICS CODE`[which(TRI_NETS20_label1$egregious_polluter == TRUE)]))/length(valid_NAICS))
 
-#Percent of total annual pollution contributed by egregious pollutors
+#Percent of total annual pollution contributed by egregious polluters
 #Option 1 (simplest option)
 total_annual_pollution = sum(TRI_NETS20_label1$RSEI_Hazard,na.rm = TRUE)
 
-total_egregious_pollution = sum(unique(TRI_NETS20_label1$RSEI_Hazard[which(TRI_NETS20_label1$egregious_pollutor == TRUE)]))
+total_egregious_pollution = sum(unique(TRI_NETS20_label1$RSEI_Hazard[which(TRI_NETS20_label1$egregious_polluter == TRUE)]))
 
 100*(total_egregious_pollution/total_annual_pollution)
 
@@ -468,7 +468,7 @@ total_egregious_pollution = sum(unique(TRI_NETS20_label1$RSEI_Hazard[which(TRI_N
 # for (i in valid_NAICS){
 #   data = TRI_NETS20_label1 %>% filter(`41. PRIMARY NAICS CODE` == i)
 #   total_pollution = sum(data$RSEI_Hazard,na.rm = TRUE)
-#   egregious_pollution = sum(data$RSEI_Hazard[which(data$egregious_pollutor == TRUE)],na.rm = TRUE)
+#   egregious_pollution = sum(data$RSEI_Hazard[which(data$egregious_polluter == TRUE)],na.rm = TRUE)
 #   
 #   NAICS_percentages[tracker] = egregious_pollution/total_pollution
 #   tracker = tracker+1
@@ -476,36 +476,36 @@ total_egregious_pollution = sum(unique(TRI_NETS20_label1$RSEI_Hazard[which(TRI_N
 # 
 # mean(na.omit(NAICS_percentages))
 
-#Median RSEI among egregious pollutors 
-median(TRI_NETS20_label1$RSEI_Hazard[which(TRI_NETS20_label1$egregious_pollutor == TRUE)])
+#Median RSEI among egregious polluters 
+median(TRI_NETS20_label1$RSEI_Hazard[which(TRI_NETS20_label1$egregious_polluter == TRUE)])
 
-#Minimum RSEI among egregious pollutors 
-min(TRI_NETS20_label1$RSEI_Hazard[which(TRI_NETS20_label1$egregious_pollutor == TRUE)])
+#Minimum RSEI among egregious polluters 
+min(TRI_NETS20_label1$RSEI_Hazard[which(TRI_NETS20_label1$egregious_polluter == TRUE)])
 
-#Maximum RSEI among egregious pollutors 
-format(max(TRI_NETS20_label1$RSEI_Hazard[which(TRI_NETS20_label1$egregious_pollutor == TRUE)]),scientific = FALSE)
+#Maximum RSEI among egregious polluters 
+format(max(TRI_NETS20_label1$RSEI_Hazard[which(TRI_NETS20_label1$egregious_polluter == TRUE)]),scientific = FALSE)
 ```
 
 Operation 2: 
 
 ```{r}
-#Number of facilities categorized as egregious pollutors
-sum(TRI_NETS20_label2$egregious_pollutor)
+#Number of facilities categorized as egregious polluters
+sum(TRI_NETS20_label2$egregious_polluter)
 
-#Percent of facilities categorized as egregious pollutors
-100*(sum(TRI_NETS20_label2$egregious_pollutor)/length(TRI_NETS20_label2$egregious_pollutor))
+#Percent of facilities categorized as egregious polluters
+100*(sum(TRI_NETS20_label2$egregious_polluter)/length(TRI_NETS20_label2$egregious_polluter))
 
-#Number of industries with egregious pollutors
-length(unique(TRI_NETS20_label2$`41. PRIMARY NAICS CODE`[which(TRI_NETS20_label2$egregious_pollutor == TRUE)]))
+#Number of industries with egregious polluters
+length(unique(TRI_NETS20_label2$`41. PRIMARY NAICS CODE`[which(TRI_NETS20_label2$egregious_polluter == TRUE)]))
 
-#Percent of industries with egregious pollutors
-100*(length(unique(TRI_NETS20_label2$`41. PRIMARY NAICS CODE`[which(TRI_NETS20_label2$egregious_pollutor == TRUE)]))/length(valid_NAICS))
+#Percent of industries with egregious polluters
+100*(length(unique(TRI_NETS20_label2$`41. PRIMARY NAICS CODE`[which(TRI_NETS20_label2$egregious_polluter == TRUE)]))/length(valid_NAICS))
 
-#Percent of total annual pollution contributed by egregious pollutors
+#Percent of total annual pollution contributed by egregious polluters
 #Option 1 (simplest option)
 total_annual_pollution = sum(TRI_NETS20_label2$RSEI_Hazard,na.rm = TRUE)
 
-total_egregious_pollution = sum(unique(TRI_NETS20_label2$RSEI_Hazard[which(TRI_NETS20_label2$egregious_pollutor == TRUE)]),
+total_egregious_pollution = sum(unique(TRI_NETS20_label2$RSEI_Hazard[which(TRI_NETS20_label2$egregious_polluter == TRUE)]),
                                 na.rm = TRUE)
 
 100*(total_egregious_pollution/total_annual_pollution)
@@ -516,7 +516,7 @@ total_egregious_pollution = sum(unique(TRI_NETS20_label2$RSEI_Hazard[which(TRI_N
 # for (i in valid_NAICS){
 #   data = TRI_NETS20_label2 %>% filter(`41. PRIMARY NAICS CODE` == i)
 #   total_pollution = sum(data$RSEI_Hazard,na.rm = TRUE)
-#   egregious_pollution = sum(data$RSEI_Hazard[which(data$egregious_pollutor == TRUE)],na.rm = TRUE)
+#   egregious_pollution = sum(data$RSEI_Hazard[which(data$egregious_polluter == TRUE)],na.rm = TRUE)
 #   
 #   NAICS_percentages[tracker] = egregious_pollution/total_pollution
 #   tracker = tracker+1
@@ -524,39 +524,39 @@ total_egregious_pollution = sum(unique(TRI_NETS20_label2$RSEI_Hazard[which(TRI_N
 # 
 # mean(na.omit(NAICS_percentages))
 
-#Median RSEI among egregious pollutors 
-median(TRI_NETS20_label2$RSEI_Hazard[which(TRI_NETS20_label2$egregious_pollutor == TRUE)],
+#Median RSEI among egregious polluters 
+median(TRI_NETS20_label2$RSEI_Hazard[which(TRI_NETS20_label2$egregious_polluter == TRUE)],
        na.rm = TRUE)
 
-#Minimum RSEI among egregious pollutors 
-min(TRI_NETS20_label2$RSEI_Hazard[which(TRI_NETS20_label2$egregious_pollutor == TRUE)],
+#Minimum RSEI among egregious polluters 
+min(TRI_NETS20_label2$RSEI_Hazard[which(TRI_NETS20_label2$egregious_polluter == TRUE)],
     na.rm = TRUE)
 
-#Maximum RSEI among egregious pollutors 
-format(max(TRI_NETS20_label2$RSEI_Hazard[which(TRI_NETS20_label2$egregious_pollutor == TRUE)],
+#Maximum RSEI among egregious polluters 
+format(max(TRI_NETS20_label2$RSEI_Hazard[which(TRI_NETS20_label2$egregious_polluter == TRUE)],
            na.rm = TRUE),scientific = FALSE)
 ```
 
 Operation 3: 
 
 ```{r}
-#Number of facilities categorized as egregious pollutors
-sum(TRI_NETS20_label3$egregious_pollutor)
+#Number of facilities categorized as egregious polluters
+sum(TRI_NETS20_label3$egregious_polluter)
 
-#Percent of facilities categorized as egregious pollutors
-100*(sum(TRI_NETS20_label3$egregious_pollutor)/length(TRI_NETS20_label3$egregious_pollutor))
+#Percent of facilities categorized as egregious polluters
+100*(sum(TRI_NETS20_label3$egregious_polluter)/length(TRI_NETS20_label3$egregious_polluter))
 
-#Number of industries with egregious pollutors
-length(unique(TRI_NETS20_label3$`41. PRIMARY NAICS CODE`[which(TRI_NETS20_label3$egregious_pollutor == TRUE)]))
+#Number of industries with egregious polluters
+length(unique(TRI_NETS20_label3$`41. PRIMARY NAICS CODE`[which(TRI_NETS20_label3$egregious_polluter == TRUE)]))
 
-#Percent of industries with egregious pollutors
-100*(length(unique(TRI_NETS20_label3$`41. PRIMARY NAICS CODE`[which(TRI_NETS20_label3$egregious_pollutor == TRUE)]))/length(valid_NAICS))
+#Percent of industries with egregious polluters
+100*(length(unique(TRI_NETS20_label3$`41. PRIMARY NAICS CODE`[which(TRI_NETS20_label3$egregious_polluter == TRUE)]))/length(valid_NAICS))
 
-#Percent of total annual pollution contributed by egregious pollutors
+#Percent of total annual pollution contributed by egregious polluters
 #Option 1 (simplest option)
 total_annual_pollution = sum(TRI_NETS20_label3$RSEI_Hazard,na.rm = TRUE)
 
-total_egregious_pollution = sum(unique(TRI_NETS20_label3$RSEI_Hazard[which(TRI_NETS20_label3$egregious_pollutor == TRUE)]))
+total_egregious_pollution = sum(unique(TRI_NETS20_label3$RSEI_Hazard[which(TRI_NETS20_label3$egregious_polluter == TRUE)]))
 
 100*(total_egregious_pollution/total_annual_pollution)
 
@@ -566,7 +566,7 @@ total_egregious_pollution = sum(unique(TRI_NETS20_label3$RSEI_Hazard[which(TRI_N
 # for (i in valid_NAICS){
 #   data = TRI_NETS20_label3 %>% filter(`41. PRIMARY NAICS CODE` == i)
 #   total_pollution = sum(data$RSEI_Hazard,na.rm = TRUE)
-#   egregious_pollution = sum(data$RSEI_Hazard[which(data$egregious_pollutor == TRUE)],na.rm = TRUE)
+#   egregious_pollution = sum(data$RSEI_Hazard[which(data$egregious_polluter == TRUE)],na.rm = TRUE)
 #   
 #   NAICS_percentages[tracker] = egregious_pollution/total_pollution
 #   tracker = tracker+1
@@ -574,36 +574,36 @@ total_egregious_pollution = sum(unique(TRI_NETS20_label3$RSEI_Hazard[which(TRI_N
 # 
 # mean(na.omit(NAICS_percentages))
 
-#Median RSEI among egregious pollutors 
-median(TRI_NETS20_label3$RSEI_Hazard[which(TRI_NETS20_label3$egregious_pollutor == TRUE)])
+#Median RSEI among egregious polluters 
+median(TRI_NETS20_label3$RSEI_Hazard[which(TRI_NETS20_label3$egregious_polluter == TRUE)])
 
-#Minimum RSEI among egregious pollutors 
-min(TRI_NETS20_label3$RSEI_Hazard[which(TRI_NETS20_label3$egregious_pollutor == TRUE)])
+#Minimum RSEI among egregious polluters 
+min(TRI_NETS20_label3$RSEI_Hazard[which(TRI_NETS20_label3$egregious_polluter == TRUE)])
 
-#Maximum RSEI among egregious pollutors 
-format(max(TRI_NETS20_label3$RSEI_Hazard[which(TRI_NETS20_label3$egregious_pollutor == TRUE)]),scientific = FALSE)
+#Maximum RSEI among egregious polluters 
+format(max(TRI_NETS20_label3$RSEI_Hazard[which(TRI_NETS20_label3$egregious_polluter == TRUE)]),scientific = FALSE)
 ```
 
 Operation 4: 
 
 ```{r}
-#Number of facilities categorized as egregious pollutors
-sum(TRI_NETS20_label4$egregious_pollutor)
+#Number of facilities categorized as egregious polluters
+sum(TRI_NETS20_label4$egregious_polluter)
 
-#Percent of facilities categorized as egregious pollutors
-100*(sum(TRI_NETS20_label4$egregious_pollutor)/length(TRI_NETS20_label4$egregious_pollutor))
+#Percent of facilities categorized as egregious polluters
+100*(sum(TRI_NETS20_label4$egregious_polluter)/length(TRI_NETS20_label4$egregious_polluter))
 
-#Number of industries with egregious pollutors
-length(unique(TRI_NETS20_label4$`41. PRIMARY NAICS CODE`[which(TRI_NETS20_label4$egregious_pollutor == TRUE)]))
+#Number of industries with egregious polluters
+length(unique(TRI_NETS20_label4$`41. PRIMARY NAICS CODE`[which(TRI_NETS20_label4$egregious_polluter == TRUE)]))
 
-#Percent of industries with egregious pollutors
-100*(length(unique(TRI_NETS20_label4$`41. PRIMARY NAICS CODE`[which(TRI_NETS20_label4$egregious_pollutor == TRUE)]))/length(valid_NAICS))
+#Percent of industries with egregious polluters
+100*(length(unique(TRI_NETS20_label4$`41. PRIMARY NAICS CODE`[which(TRI_NETS20_label4$egregious_polluter == TRUE)]))/length(valid_NAICS))
 
-#Percent of total annual pollution contributed by egregious pollutors
+#Percent of total annual pollution contributed by egregious polluters
 #Option 1 (simplest option)
 total_annual_pollution = sum(TRI_NETS20_label4$RSEI_Hazard,na.rm = TRUE)
 
-total_egregious_pollution = sum(unique(TRI_NETS20_label4$RSEI_Hazard[which(TRI_NETS20_label4$egregious_pollutor == TRUE)]))
+total_egregious_pollution = sum(unique(TRI_NETS20_label4$RSEI_Hazard[which(TRI_NETS20_label4$egregious_polluter == TRUE)]))
 
 100*(total_egregious_pollution/total_annual_pollution)
 
@@ -613,7 +613,7 @@ total_egregious_pollution = sum(unique(TRI_NETS20_label4$RSEI_Hazard[which(TRI_N
 # for (i in valid_NAICS){
 #   data = TRI_NETS20_label4 %>% filter(`41. PRIMARY NAICS CODE` == i)
 #   total_pollution = sum(data$RSEI_Hazard,na.rm = TRUE)
-#   egregious_pollution = sum(data$RSEI_Hazard[which(data$egregious_pollutor == TRUE)],na.rm = TRUE)
+#   egregious_pollution = sum(data$RSEI_Hazard[which(data$egregious_polluter == TRUE)],na.rm = TRUE)
 #   
 #   NAICS_percentages[tracker] = egregious_pollution/total_pollution
 #   tracker = tracker+1
@@ -621,36 +621,36 @@ total_egregious_pollution = sum(unique(TRI_NETS20_label4$RSEI_Hazard[which(TRI_N
 # 
 # mean(na.omit(NAICS_percentages))
 
-#Median RSEI among egregious pollutors 
-median(TRI_NETS20_label4$RSEI_Hazard[which(TRI_NETS20_label4$egregious_pollutor == TRUE)])
+#Median RSEI among egregious polluters 
+median(TRI_NETS20_label4$RSEI_Hazard[which(TRI_NETS20_label4$egregious_polluter == TRUE)])
 
-#Minimum RSEI among egregious pollutors 
-min(TRI_NETS20_label4$RSEI_Hazard[which(TRI_NETS20_label4$egregious_pollutor == TRUE)])
+#Minimum RSEI among egregious polluters 
+min(TRI_NETS20_label4$RSEI_Hazard[which(TRI_NETS20_label4$egregious_polluter == TRUE)])
 
-#Maximum RSEI among egregious pollutors 
-format(max(TRI_NETS20_label4$RSEI_Hazard[which(TRI_NETS20_label4$egregious_pollutor == TRUE)]),scientific = FALSE)
+#Maximum RSEI among egregious polluters 
+format(max(TRI_NETS20_label4$RSEI_Hazard[which(TRI_NETS20_label4$egregious_polluter == TRUE)]),scientific = FALSE)
 ```
 
 Operation 5: 
 
 ```{r}
-#Number of facilities categorized as egregious pollutors
-sum(TRI_NETS20_label5$egregious_pollutor)
+#Number of facilities categorized as egregious polluters
+sum(TRI_NETS20_label5$egregious_polluter)
 
-#Percent of facilities categorized as egregious pollutors
-100*(sum(TRI_NETS20_label5$egregious_pollutor)/length(TRI_NETS20_label5$egregious_pollutor))
+#Percent of facilities categorized as egregious polluters
+100*(sum(TRI_NETS20_label5$egregious_polluter)/length(TRI_NETS20_label5$egregious_polluter))
 
-#Number of industries with egregious pollutors
-length(unique(TRI_NETS20_label5$`41. PRIMARY NAICS CODE`[which(TRI_NETS20_label5$egregious_pollutor == TRUE)]))
+#Number of industries with egregious polluters
+length(unique(TRI_NETS20_label5$`41. PRIMARY NAICS CODE`[which(TRI_NETS20_label5$egregious_polluter == TRUE)]))
 
-#Percent of industries with egregious pollutors
-100*(length(unique(TRI_NETS20_label5$`41. PRIMARY NAICS CODE`[which(TRI_NETS20_label5$egregious_pollutor == TRUE)]))/length(valid_NAICS))
+#Percent of industries with egregious polluters
+100*(length(unique(TRI_NETS20_label5$`41. PRIMARY NAICS CODE`[which(TRI_NETS20_label5$egregious_polluter == TRUE)]))/length(valid_NAICS))
 
-#Percent of total annual pollution contributed by egregious pollutors
+#Percent of total annual pollution contributed by egregious polluters
 #Option 1 (simplest option)
 total_annual_pollution = sum(TRI_NETS20_label5$RSEI_Hazard,na.rm = TRUE)
 
-total_egregious_pollution = sum(unique(TRI_NETS20_label5$RSEI_Hazard[which(TRI_NETS20_label5$egregious_pollutor == TRUE)]))
+total_egregious_pollution = sum(unique(TRI_NETS20_label5$RSEI_Hazard[which(TRI_NETS20_label5$egregious_polluter == TRUE)]))
 
 100*(total_egregious_pollution/total_annual_pollution)
 
@@ -660,7 +660,7 @@ total_egregious_pollution = sum(unique(TRI_NETS20_label5$RSEI_Hazard[which(TRI_N
 # for (i in valid_NAICS){
 #   data = TRI_NETS20_label5 %>% filter(`41. PRIMARY NAICS CODE` == i)
 #   total_pollution = sum(data$RSEI_Hazard,na.rm = TRUE)
-#   egregious_pollution = sum(data$RSEI_Hazard[which(data$egregious_pollutor == TRUE)],na.rm = TRUE)
+#   egregious_pollution = sum(data$RSEI_Hazard[which(data$egregious_polluter == TRUE)],na.rm = TRUE)
 #   
 #   NAICS_percentages[tracker] = egregious_pollution/total_pollution
 #   tracker = tracker+1
@@ -668,14 +668,14 @@ total_egregious_pollution = sum(unique(TRI_NETS20_label5$RSEI_Hazard[which(TRI_N
 # 
 # mean(na.omit(NAICS_percentages))
 
-#Median RSEI among egregious pollutors 
-median(TRI_NETS20_label5$RSEI_Hazard[which(TRI_NETS20_label5$egregious_pollutor == TRUE)])
+#Median RSEI among egregious polluters 
+median(TRI_NETS20_label5$RSEI_Hazard[which(TRI_NETS20_label5$egregious_polluter == TRUE)])
 
-#Minimum RSEI among egregious pollutors 
-min(TRI_NETS20_label5$RSEI_Hazard[which(TRI_NETS20_label5$egregious_pollutor == TRUE)])
+#Minimum RSEI among egregious polluters 
+min(TRI_NETS20_label5$RSEI_Hazard[which(TRI_NETS20_label5$egregious_polluter == TRUE)])
 
-#Maximum RSEI among egregious pollutors 
-format(max(TRI_NETS20_label5$RSEI_Hazard[which(TRI_NETS20_label5$egregious_pollutor == TRUE)]),scientific = FALSE)
+#Maximum RSEI among egregious polluters 
+format(max(TRI_NETS20_label5$RSEI_Hazard[which(TRI_NETS20_label5$egregious_polluter == TRUE)]),scientific = FALSE)
 ```
 
 Identify overlapping facilities (by Duns_TRIFID) across operationalizations 
@@ -718,15 +718,15 @@ Create summaries by industry:
 
 ```{r}
 # Which facilities are identified as EP across all 5 operationalizations
-EP1 = TRI_NETS20_label2$TRIFID[which(TRI_NETS20_label1$egregious_pollutor 
+EP1 = TRI_NETS20_label2$TRIFID[which(TRI_NETS20_label1$egregious_polluter 
                                      == TRUE)]
-EP2 = TRI_NETS20_label2$TRIFID[which(TRI_NETS20_label2$egregious_pollutor 
+EP2 = TRI_NETS20_label2$TRIFID[which(TRI_NETS20_label2$egregious_polluter 
                                      == TRUE)]
-EP3 = TRI_NETS20_label3$TRIFID[which(TRI_NETS20_label3$egregious_pollutor 
+EP3 = TRI_NETS20_label3$TRIFID[which(TRI_NETS20_label3$egregious_polluter 
                                      == TRUE)]
-EP4 = TRI_NETS20_label4$TRIFID[which(TRI_NETS20_label4$egregious_pollutor 
+EP4 = TRI_NETS20_label4$TRIFID[which(TRI_NETS20_label4$egregious_polluter 
                                      == TRUE)]
-EP5 = TRI_NETS20_label5$TRIFID[which(TRI_NETS20_label5$egregious_pollutor 
+EP5 = TRI_NETS20_label5$TRIFID[which(TRI_NETS20_label5$egregious_polluter 
                                      == TRUE)]
 
 common_ids <- Reduce(intersect, list(EP1, EP2, EP3, EP4, EP5))
@@ -739,7 +739,7 @@ for(i in valid_NAICS){
   NAICS_table1[tracker,1] = sum(NAICS_data$RSEI_Hazard,na.rm = TRUE)
   NAICS_table1[tracker,2] = median(NAICS_data$RSEI_Hazard,na.rm = TRUE)
   NAICS_table1[tracker,3] = median(NAICS_data$Employees,na.rm = TRUE)
-  NAICS_table1[tracker,4] = sum(NAICS_data$egregious_pollutor,na.rm = TRUE)
+  NAICS_table1[tracker,4] = sum(NAICS_data$egregious_polluter,na.rm = TRUE)
   
   tracker = tracker+1
 }
@@ -749,7 +749,7 @@ NAICS_table1 = data.frame(NAICS_table1)
 colnames(NAICS_table1) = c("NAICS","total_pollution","median_pollution",
                           "median_employees","num_EP")
 
-# NAICS_table1 = TRI_NETS20_label1 %>% group_by(`41. PRIMARY NAICS CODE`) %>% summarize(total_pollution = sum(RSEI_Hazard,na.rm = TRUE), median_pollution = median(RSEI_Hazard,na.rm = TRUE), median_employees = median(Employees,na.rm = TRUE), num_egregious = sum(egregious_pollutor,na.rm = TRUE))
+# NAICS_table1 = TRI_NETS20_label1 %>% group_by(`41. PRIMARY NAICS CODE`) %>% summarize(total_pollution = sum(RSEI_Hazard,na.rm = TRUE), median_pollution = median(RSEI_Hazard,na.rm = TRUE), median_employees = median(Employees,na.rm = TRUE), num_egregious = sum(egregious_polluter,na.rm = TRUE))
 ```
 
 Industry summary file (all variables): 
@@ -803,7 +803,7 @@ Summary by state:
 
 ```{r}
 #total number of facilities and EPs in each state
-state_table = TRI_NETS20_label3 %>% group_by(`14. FACILITY STATE`) %>% summarize(num_facilities = length(unique(Duns_TRIFID)), num_EPs = sum(egregious_pollutor))
+state_table = TRI_NETS20_label3 %>% group_by(`14. FACILITY STATE`) %>% summarize(num_facilities = length(unique(Duns_TRIFID)), num_EPs = sum(egregious_polluter))
 ```
 
 Fit models on 10 years of EP data to identify significant characteristics of egregious polluters 
@@ -883,10 +883,10 @@ colnames(train_set)[1] = "State"
 colnames(test_set)[1] = "State"
 
 train_set = na.omit(train_set)
-levels(train_set$egregious_pollutor) = c("No","Yes")
+levels(train_set$egregious_polluter) = c("No","Yes")
 
 test_set = na.omit(test_set)
-levels(test_set$egregious_pollutor) = c("No","Yes")
+levels(test_set$egregious_polluter) = c("No","Yes")
 ```
 
 K-fold cross validation to choose best values for SMOTE
@@ -896,7 +896,7 @@ K-fold cross validation to choose best values for SMOTE
 smote_rf_cv <- function(train_data, perc_over, perc_under, k = 5, ntree_values = 500) {
   
   # Perform SMOTE on the training data with specified perc.over and perc.under
-  smote_train <- smote(egregious_pollutor ~ ., data = train_data, perc.over = perc_over, perc.under = perc_under)
+  smote_train <- smote(egregious_polluter ~ ., data = train_data, perc.over = perc_over, perc.under = perc_under)
   
   # Set up cross-validation control
   control <- trainControl(method = "cv", 
@@ -908,7 +908,7 @@ smote_rf_cv <- function(train_data, perc_over, perc_under, k = 5, ntree_values =
   # tune_grid <- expand.grid(mtry = c(2,4,6,8,10))
 
   # Train the Random Forest model with cross-validation
-  rf_model <- train(egregious_pollutor ~ ., 
+  rf_model <- train(egregious_polluter ~ ., 
                     data = smote_train, 
                     method = "rf", 
                     metric = "ROC", # Use ROC as the metric for optimization
@@ -939,22 +939,22 @@ best_combination <- results[which.max(results$ROC),]
 print(best_combination)
 
 # Apply SMOTE with the optimal parameters
-optimal_smote <- smote(egregious_pollutor ~ ., data = a, perc.over = best_combination$perc_over, k = 5,
+optimal_smote <- smote(egregious_polluter ~ ., data = a, perc.over = best_combination$perc_over, k = 5,
                        perc.under = best_combination$perc_under)
 ```
 
 ```{r}
-optimal_smote <- smote(egregious_pollutor ~ ., data = train_set, perc.over = 10, 
+optimal_smote <- smote(egregious_polluter ~ ., data = train_set, perc.over = 10, 
                        k = 5,perc.under = 2.3)
 
-table(train_set$egregious_pollutor)
-table(optimal_smote$egregious_pollutor)
+table(train_set$egregious_polluter)
+table(optimal_smote$egregious_polluter)
 ```
 
 Fit random forest model to training data
 
 ```{r}
-EP_classifier_RF = randomForest(x = optimal_smote[,1:10],y = optimal_smote$egregious_pollutor,ntree = 500,mtry=3)
+EP_classifier_RF = randomForest(x = optimal_smote[,1:10],y = optimal_smote$egregious_polluter,ntree = 500,mtry=3)
 EP_classifier_RF
 
 plot(EP_classifier_RF)
@@ -977,7 +977,7 @@ Evaluate model performance:
 
 ```{r}
 #Confusion matrix
-confusion = table(test_set$egregious_pollutor,preds)
+confusion = table(test_set$egregious_polluter,preds)
 confusion
 
 #Feature importance plot
@@ -1001,7 +1001,7 @@ For large datasets, ranger package is preferred for fitting RFs (similar results
 library(ranger)
 
 EP_classifier_RF2 <- ranger(
-  formula = egregious_pollutor ~ ., 
+  formula = egregious_polluter ~ ., 
   data = optimal_smote, 
   num.trees = 500,
   importance = "impurity"
@@ -1011,7 +1011,7 @@ EP_classifier_RF2
 preds2 = predict(EP_classifier_RF2, data = test_set, num.trees = 500)
 
 #Confusion matrix
-confusion = table(test_set$egregious_pollutor,preds2$predictions)
+confusion = table(test_set$egregious_polluter,preds2$predictions)
 confusion
 
 #Feature importance
@@ -1050,7 +1050,7 @@ Assumptions for logistic regression:
 6. Large sample size 
 
 ```{r}
-EP_glm = glm(egregious_pollutor ~., data = glm_data, family = "binomial")
+EP_glm = glm(egregious_polluter ~., data = glm_data, family = "binomial")
 summary(EP_glm)
 
 VIF(EP_glm)
@@ -1067,7 +1067,7 @@ glm_data$interaction2 <- glm_data$Employees * glm_data$log_Employees
 
 
 # Fit augmented model
-augmented_model <- glm(egregious_pollutor ~., family = binomial, data = glm_data)
+augmented_model <- glm(egregious_polluter ~., family = binomial, data = glm_data)
 
 # Check significance of interaction terms
 summary(augmented_model)
